@@ -15,7 +15,8 @@
 #   image: ./docker-aws-cdk/Dockerfile'
 
 
-# action.yml
+on: workflow_call
+
 name: 'Deploy CDK'
 description: 'Deploy a CDK project automatically'
 inputs:
