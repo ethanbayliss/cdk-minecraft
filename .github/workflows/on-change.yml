@@ -15,16 +15,15 @@
 #   image: ./docker-aws-cdk/Dockerfile'
 
 
-on: workflow_call
+on: push
 jobs:
   compile:
-    container: 
-      runs-on: ubuntu-latest
-      image: './docker-aws-cdk/Dockerfile'
-      steps: 
-        - run: |
-            echo test
-            echo test123
+    runs-on: ubuntu-latest
+    container: './docker-aws-cdk/Dockerfile'
+    steps: 
+      - run: |
+          echo test
+          echo test123
 
 # name: 'Deploy CDK'
 # description: 'Deploy a CDK project automatically'
