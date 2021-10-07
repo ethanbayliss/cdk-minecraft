@@ -1,0 +1,15 @@
+name: GitHub Actions on change
+# on: [push]
+# jobs:
+#   Explore-GitHub-Actions:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - run: npm install --global --production
+#       - run: npm run build
+#       #- run: cdk diff
+#       #- run: cdk doctor
+#       #approval?
+#       - run: cdk deploy --progress=events --all 
+runs:
+  using: 'docker'
+  image: ./docker-aws-cdk/Dockerfile'
