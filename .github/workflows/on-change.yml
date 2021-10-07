@@ -16,16 +16,25 @@
 
 
 on: workflow_call
+jobs:
+  compile:
+    container: 
+      runs-on: ubuntu-latest
+      image: './docker-aws-cdk/Dockerfile'
+      steps: 
+        - run: |
+            echo test
+            echo test123
 
-name: 'Deploy CDK'
-description: 'Deploy a CDK project automatically'
-inputs:
-  ALPINE_VERSION:  # id of input
-    description: 'Alpine Linux Version'
-    required: true
-    default: 3.14
-runs:
-  using: 'docker'
-  image: './docker-aws-cdk/Dockerfile'
-  args:
-    - ${{ inputs.ALPINE_VERSION }}
+# name: 'Deploy CDK'
+# description: 'Deploy a CDK project automatically'
+# inputs:
+#   ALPINE_VERSION:  # id of input
+#     description: 'Alpine Linux Version'
+#     required: true
+#     default: 3.14
+# runs:
+#   using: 'docker'
+#   image: './docker-aws-cdk/Dockerfile'
+#   args:
+#     - ${{ inputs.ALPINE_VERSION }}
