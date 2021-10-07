@@ -1,5 +1,5 @@
-name: GitHub Actions on change
-on: [push]
+# name: GitHub Actions on change
+# on: [push]
 # jobs:
 #   Explore-GitHub-Actions:
 #     runs-on: ubuntu-latest
@@ -10,6 +10,21 @@ on: [push]
 #       #- run: cdk doctor
 #       #approval?
 #       - run: cdk deploy --progress=events --all 
+# runs:
+#   using: 'docker'
+#   image: ./docker-aws-cdk/Dockerfile'
+
+
+# action.yml
+name: 'Deploy CDK'
+description: 'Deploy a CDK project automatically'
+inputs:
+  ALPINE_VERSION:  # id of input
+    description: 'Alpine Linux Version'
+    required: true
+    default: 3.14
 runs:
   using: 'docker'
-  image: ./docker-aws-cdk/Dockerfile'
+  image: './docker-aws-cdk/Dockerfile'
+  args:
+    - ${{ inputs.ALPINE_VERSION }}
