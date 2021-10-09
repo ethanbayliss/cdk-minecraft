@@ -1,3 +1,0 @@
-[submodule ".github/workflows/docker-aws-cdk"]
-	path = .github/workflows/docker-aws-cdk
-	url = https://github.com/ethanbayliss/docker-aws-cdk
