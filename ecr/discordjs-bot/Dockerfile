@@ -1,0 +1,3 @@
+FROM node:16
+
+ENV DISCORD_TOKEN=${echo $DISCORD_TOKEN}
