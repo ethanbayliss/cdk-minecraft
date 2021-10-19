@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { ContainerStorageStack } from './storage';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { Vpc } from '@aws-cdk/aws-ec2';
+import { SecurityGroup, Vpc, Peer, Port } from '@aws-cdk/aws-ec2';
 import { Queue } from '@aws-cdk/aws-sqs';
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
-import { Cluster, FargateTaskDefinition, ContainerImage, Protocol } from '@aws-cdk/aws-ecs'
+import { Cluster, FargateTaskDefinition, ContainerImage, Protocol, FargateService, AwsLogDriver } from '@aws-cdk/aws-ecs'
 import path = require('path');
 
 export class CdkMinecraftStack extends cdk.Stack {
@@ -32,13 +32,17 @@ export class CdkMinecraftStack extends cdk.Stack {
 
     new ContainerStorageStack(this, 'Storage', 'vanilla', gameVpc)
 
-    new Cluster(this, 'minecraftCluster', { 
+    const minecraftCluster = new Cluster(this, 'minecraftCluster', { 
       vpc: gameVpc,
     });
 
-    const vanillaTask = new FargateTaskDefinition(this, 'vanilla', {
+    const vanillaTask = new FargateTaskDefinition(this, 'vanillaTask', {
       cpu: 2048,
       memoryLimitMiB: vanillaMemory,
+    })
+    
+    const vanillaLogs = new AwsLogDriver({
+      streamPrefix: 'MinecraftCluster',
     })
 
     const vanillaContainer = vanillaTask.addContainer('itzg/minecraft-server', {
@@ -48,16 +52,40 @@ export class CdkMinecraftStack extends cdk.Stack {
         EULA: "TRUE",
         OVERRIDE_SERVER_PROPERTIES: "true",
         TYPE: "PAPER",
-        MEMORY: (vanillaMemory-500).toString + "M",
+        MEMORY: (vanillaMemory-500).toString() + "M",
+        OPS: "ethan240"
       },
+      logging: vanillaLogs,
       portMappings: [
         {
           containerPort: 25565,
           protocol: Protocol.TCP,
         },
+        {
+          containerPort: 25575,
+          protocol: Protocol.TCP,
+        },
       ],
     });
 
-    //make a service
+    const mcSg = new SecurityGroup(this, 'minecraftSg', {
+      vpc: gameVpc,
+      allowAllOutbound: true,
+      description: 'Security group to allow minecraft server access to all',
+    })
+
+    mcSg.addIngressRule(
+      Peer.anyIpv4(),
+      Port.tcp(25565),
+      'Minecraft',
+    )
+
+    const vanillaService = new FargateService(this, 'vanillaService', {
+      cluster: minecraftCluster,
+      taskDefinition: vanillaTask,
+      assignPublicIp: true,
+      serviceName: 'vanilla',
+      securityGroups: [mcSg],
+    })
   }
 }
